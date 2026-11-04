@@ -128,6 +128,17 @@ html, body { height: 100%; background: #05060f; overflow: hidden; font-family: "
 .lbRow.top1 .nm { color: #ffd94d; font-weight: 800; }
 .lbEmpty { font-size: 2.6cqw; color: #aab4dd; padding: 2% 0; }
 
+/* Thẻ tên rồng featured — nổi ngay dưới thân rồng lớn, trên dòng hướng dẫn */
+#dragonName {
+  position: absolute; z-index: 10; top: 52.7%; left: 50%; transform: translateX(-50%);
+  background: rgba(9, 10, 32, .9); border: 2px solid rgba(255, 210, 90, .85);
+  border-radius: 999px; padding: .9% 3.4%;
+  font-size: 2.95cqw; font-weight: 700; color: #fff;
+  white-space: nowrap; max-width: 94%; overflow: hidden; text-overflow: ellipsis;
+  box-shadow: 0 6px 22px rgba(0,0,0,.5);
+}
+#dragonName b { color: #ffdc6e; }
+
 /* Hướng dẫn 1 dòng */
 #hintLine {
   top: 57.6%; left: 3.3%; right: 3.3%;
@@ -149,14 +160,21 @@ html, body { height: 100%; background: #05060f; overflow: hidden; font-family: "
 .pet { width: 17.6%; text-align: center; animation: petIn .45s cubic-bezier(.2, 1.8, .4, 1); }
 @keyframes petIn { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .pet .ring {
+  position: relative;
   width: 100%; aspect-ratio: 1; border-radius: 50%; padding: 3.5%;
   border: 4px solid var(--c, #888);
   box-shadow: 0 0 18px var(--c, #888);
   background: rgba(5, 6, 20, .6);
 }
 .pet img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+.pet .lvChip {
+  position: absolute; bottom: -7%; left: 50%; transform: translateX(-50%);
+  background: #c8283f; color: #fff; font-size: 2cqw; font-weight: 800;
+  padding: 1% 10%; border-radius: 999px; white-space: nowrap;
+  box-shadow: 0 3px 10px rgba(0,0,0,.55);
+}
 .pet .tag {
-  margin-top: 6%; display: inline-block; max-width: 100%;
+  margin-top: 11%; display: inline-block; max-width: 100%;
   font-size: 2.45cqw; font-weight: 700; color: #fff;
   background: rgba(9, 10, 32, .92); border: 2px solid var(--c, #888);
   padding: 2.5% 7%; border-radius: 999px;

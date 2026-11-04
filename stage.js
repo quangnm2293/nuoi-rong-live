@@ -14,7 +14,9 @@ const stageEl = $('stage'), dragonWrap = $('dragonWrap'), dragonImg = $('dragonI
   flashEl = $('flash'), bigBanner = $('bigBanner'), eventBanner = $('eventBanner');
 
 let S = null;               // state mới nhất từ server
-let shownLevel = 0;         // cấp đang hiển thị trên sân
+let shownLevel = 0;         // cấp của dragon đang hiển thị trên sân
+let shownDragonId = '';     // uniqueId của dragon đang hiển thị (featured)
+let curMouth = null;        // điểm miệng của dragon đang hiển thị
 let animating = false;      // đang chạy chuỗi nở/tiến hoá → hoãn đổi hình
 let goldenEndsAt = 0;
 
@@ -35,51 +37,72 @@ connect();
 
 /* ---------------- Render state ---------------- */
 function fmt(n) { return Number(n || 0).toLocaleString('vi-VN'); }
+function featuredDragon() {
+  if (!S) return null;
+  return S.featured || (S.dragons || []).find((d) => d.uniqueId === S.featuredId) || null;
+}
 function render() {
   if (!S) return;
-  $('levelBadge').textContent = 'CẤP ' + S.level;
-  dragonWrap.className = 'lv' + S.level + (dragonWrap.classList.contains('shake') ? ' shake' : '');
-  if (!animating && shownLevel !== S.level) {
-    shownLevel = S.level;
-    dragonImg.src = ASSETS[S.level];
+  const F = featuredDragon();
+  const lv = F ? F.level : 1;
+  $('levelBadge').textContent = F ? 'CẤP ' + F.level : 'CẤP —';
+  dragonWrap.className = 'lv' + lv + (dragonWrap.classList.contains('shake') ? ' shake' : '');
+  if (F) curMouth = F.mouth;
+  if (!animating) {
+    const fid = F ? F.uniqueId : '';
+    if (shownDragonId !== fid || shownLevel !== lv) {
+      shownDragonId = fid; shownLevel = lv;
+      dragonImg.src = ASSETS[lv];
+    }
   }
-  const pct = S.expNeed ? Math.min(100, (S.expInLevel / S.expNeed) * 100) : 100;
+  // Thẻ tên nổi trên rồng lớn: rồng của ai, cấp mấy, hệ gì
+  const tag = $('dragonName');
+  if (F) {
+    tag.classList.remove('hidden');
+    tag.innerHTML = `🐉 Rồng của <b>${esc(F.nickname)}</b> • Cấp ${F.level} • Hệ ${esc(F.sysName)}${F.element === 'ice' ? ' ❄' : ''}`;
+  } else {
+    tag.classList.add('hidden');
+  }
+  // Thanh EXP của CHÍNH dragon featured (tiến độ trong cấp hiện tại)
+  const pct = F ? (F.expNeed ? Math.min(100, (F.expInLevel / F.expNeed) * 100) : 100) : 0;
   $('expFill').style.width = pct + '%';
-  $('expText').textContent = S.expNeed
-    ? `EXP ${fmt(S.expInLevel)} / ${fmt(S.expNeed)} — ${S.levelName}`
-    : `EXP ${fmt(S.totalExp)} — THẦN RỒNG cấp tối đa!`;
+  $('expText').textContent = !F
+    ? 'Chưa có rồng nào — thả tim/comment để nhận rồng của bạn!'
+    : (F.expNeed
+      ? `EXP ${fmt(F.expInLevel)} / ${fmt(F.expNeed)} — ${F.levelName} • Tổng ${fmt(F.exp)}`
+      : `TỔNG EXP ${fmt(F.exp)} — THẦN RỒNG cấp tối đa!`);
   const golden = S.golden && S.golden.active;
   $('expBar').classList.toggle('golden', !!golden);
   $('goldenTag').classList.toggle('hidden', !golden);
   goldenEndsAt = golden ? S.golden.until : 0;
-  // Bảng vàng top 3
+  // Bảng vàng top 3 theo EXP dragon, ghi kèm cấp
   const rows = (S.top || []).slice(0, 3);
   $('lbRows').innerHTML = rows.length
-    ? rows.map((p, i) => `<div class="lbRow ${i === 0 ? 'top1' : ''}"><span class="nm">${i + 1}. ${esc(p.user)}</span><span class="pts">${fmt(p.points)}</span></div>`).join('')
-    : '<div class="lbEmpty">Chưa có ai — thả tim để lên bảng!</div>';
-  renderPets();
+    ? rows.map((p, i) => `<div class="lbRow ${i === 0 ? 'top1' : ''}"><span class="nm">${i + 1}. ${esc(p.user)} • Cấp ${p.level || 1}</span><span class="pts">${fmt(p.points)}</span></div>`).join('')
+    : '<div class="lbEmpty">Chưa có ai — thả tim để có rồng và lên bảng!</div>';
+  renderHerd();
 }
-function renderPets() {
-  const pets = S.pets || [];
+function renderHerd() {
+  const dragons = S.dragons || [];
   const row = $('petsRow');
-  if (!pets.length) {
-    const html = '<div class="lbEmpty" style="font-size:2.7cqw;color:#c6cfef">Chưa ai có rồng riêng — follow là có ngay!</div>';
+  if (!dragons.length) {
+    const html = '<div class="lbEmpty" style="font-size:2.7cqw;color:#c6cfef">Chưa có con rồng nào — tương tác đầu tiên là có rồng riêng!</div>';
     if (row.dataset.sig !== html) { row.innerHTML = html; row.dataset.sig = html; }
     return;
   }
-  // Tối đa 10 vòng: 10 rồng mới nhất; thừa thì 9 rồng + 1 vòng "+N"
-  let list = pets.slice(-10);
+  // Đàn rồng đã sắp EXP giảm dần ở server: tối đa 10 ô; thừa thì 9 ô + "+N con nữa"
+  let list = dragons.slice(0, 10);
   let extra = 0;
-  if (pets.length > 10) { extra = pets.length - 9; list = pets.slice(-9); }
+  if (dragons.length > 10) { extra = dragons.length - 9; list = dragons.slice(0, 9); }
   const total = list.length + (extra ? 1 : 0);
   const wPct = total <= 5 ? 17.6 : (100 - 2.2 * (total - 1)) / total;
   let html = '';
-  if (extra > 0) {
-    html += `<div class="pet more" style="--c:#ffd94d;width:${wPct}%"><div class="ring">+${extra}</div><span class="tag">rồng khác</span></div>`;
+  for (const d of list) {
+    html += `<div class="pet" style="--c:${d.color};width:${wPct}%"><div class="ring"><img src="/assets/${d.img}" alt=""><span class="lvChip">Cấp ${d.level}</span></div>` +
+      `<span class="tag">${esc(d.nickname)}</span></div>`;
   }
-  for (const p of list) {
-    html += `<div class="pet" style="--c:${p.color};width:${wPct}%"><div class="ring"><img src="/assets/${p.img}" alt=""></div>` +
-      `<span class="tag">${esc(p.user)} • ${esc(p.sysName)}${p.rare ? ' ❄' : ''}</span></div>`;
+  if (extra > 0) {
+    html += `<div class="pet more" style="--c:#ffd94d;width:${wPct}%"><div class="ring">+${extra}</div><span class="tag">con nữa</span></div>`;
   }
   if (row.dataset.sig !== html) { row.innerHTML = html; row.dataset.sig = html; }
 }
@@ -110,10 +133,11 @@ function toCanvas(x, y) {
   const r = stageRect();
   return { x: (x - r.left) / r.width * canvas.width, y: (y - r.top) / r.height * canvas.height };
 }
-function mouthPoint() {
-  if (!S || !S.mouth) return null;
+function mouthPoint(m) {
+  const mm = m || curMouth;
+  if (!mm) return null;
   const r = dragonRect();
-  return toCanvas(r.left + S.mouth.x * r.width, r.top + S.mouth.y * r.height);
+  return toCanvas(r.left + mm.x * r.width, r.top + mm.y * r.height);
 }
 function dragonCenter() {
   const r = dragonRect();
@@ -180,7 +204,7 @@ function loop(ts) {
   // Lửa: nạp + phun
   if (fire) {
     const now = performance.now();
-    const mp = mouthPoint();
+    const mp = mouthPoint(fire.mouth);
     if (now > fire.until || !mp) { fire = null; mouthGlow.style.opacity = 0; dragonWrap.classList.remove('shake'); }
     else {
       const charging = now < fire.chargeUntil;
@@ -189,7 +213,7 @@ function loop(ts) {
       mouthGlow.style.opacity = charging ? (0.45 + 0.4 * Math.sin(now / 60)) : 0.95;
       if (!charging) {
         dragonWrap.classList.add('shake');
-        const dir = (S.mouth && S.mouth.dir) || -1;
+        const dir = (fire.mouth && fire.mouth.dir) || -1;
         const power = Math.min(1, (fire.until - now) / 600 + 0.3);
         for (let i = 0; i < 15; i++) {
           const sp = (950 + Math.random() * 800) * power;
@@ -259,8 +283,9 @@ function doFlash(cb) {
     if (cb) setTimeout(cb, 90);
   }));
 }
-function hatchSeq(toLevel) {
+function hatchSeq(uniqueId, toLevel, nickname) {
   animating = true;
+  shownDragonId = uniqueId || shownDragonId;
   dragonImg.src = ASSETS[1];
   dragonWrap.classList.add('shake');
   let amp = 0;
@@ -274,13 +299,14 @@ function hatchSeq(toLevel) {
       dragonWrap.classList.add('pop');
       setTimeout(() => dragonWrap.classList.remove('pop'), 600);
       burst(c.x, c.y, 130, ['#ffd75e', '#fff0be', '#7dffb0', '#ff96c8'], 760, 1.2, 8);
-      showBig('<div class="bb1">🐣 RỒNG ĐÃ NỞ!</div><div class="bb2">Cả phòng cùng nuôi bé lớn nhé</div>', 3800);
+      showBig(`<div class="bb1">🐣 RỒNG CỦA ${esc(nickname || 'BẠN')} ĐÃ NỞ!</div><div class="bb2">Lên Cấp 2 — Rồng Sơ Sinh</div>`, 3800);
       animating = false; render();
     });
   }, 2100);
 }
-function evolveSeq(toLevel) {
+function evolveSeq(uniqueId, toLevel, nickname) {
   animating = true;
+  shownDragonId = uniqueId || shownDragonId;
   const c = dragonCenter();
   gather(c.x, c.y, 90);
   setTimeout(() => {
@@ -290,21 +316,21 @@ function evolveSeq(toLevel) {
       setTimeout(() => dragonWrap.classList.remove('pop'), 600);
       burst(c.x, c.y, 110, ['#ffe97a', '#fff3c4', '#9dffc4'], 700, 1.1, 8);
       const names = { 3: 'Rồng Thiếu Niên', 4: 'Rồng Trưởng Thành', 5: 'THẦN RỒNG' };
-      showBig(`<div class="bb1">✨ TIẾN HÓA THÀNH CÔNG!</div><div class="bb2">CẤP ${toLevel} — ${names[toLevel] || ''}</div>`, 4000);
+      showBig(`<div class="bb1">✨ TIẾN HÓA THÀNH CÔNG!</div><div class="bb2">${esc(nickname || '')} — CẤP ${toLevel} ${names[toLevel] || ''}</div>`, 4000);
       animating = false; render();
     });
   }, 1250);
 }
-function fireSeq(user, coins) {
-  const mp = mouthPoint();
-  if (!mp) { // trứng: bùng sáng thay phun lửa
+function fireSeq(user, coins, mouth) {
+  const mp = mouthPoint(mouth);
+  if (!mp) { // trứng (cấp 1 chưa có miệng): bùng sáng thay phun lửa
     const c = dragonCenter();
     burst(c.x, c.y, 90, ['#ffd75e', '#ffb03a', '#fff0be'], 640, 1, 8);
-    showBanner(`🔥 ${user} tặng quà lớn — trứng phát sáng ăn mừng!`);
+    showBanner(`🔥 ${user} tặng quà lớn — trứng của bạn phát sáng ăn mừng!`);
     return;
   }
-  fire = { chargeUntil: performance.now() + 850, until: performance.now() + 850 + 2500 };
-  showBanner(`🔥 ${user} tặng quà lớn${coins ? ` (${Number(coins).toLocaleString('vi-VN')} xu)` : ''} — RỒNG PHUN LỬA!`);
+  fire = { mouth: mouth || curMouth, chargeUntil: performance.now() + 850, until: performance.now() + 850 + 2500 };
+  showBanner(`🔥 ${user} tặng quà lớn${coins ? ` (${Number(coins).toLocaleString('vi-VN')} xu)` : ''} — RỒNG CỦA BẠN PHUN LỬA!`);
 }
 
 /* ---------------- Xử lý fx từ server ---------------- */
@@ -314,12 +340,18 @@ function handleFx(m) {
     case 'banner': showBanner(m.text, m.ms); break;
     case 'hearts': hearts(m.count || 5, m.user); break;
     case 'feed': feedFx(m.user || 'Khán giả'); break;
-    case 'hatch': hatchSeq(m.toLevel || 2); break;
-    case 'evolve': evolveSeq(m.toLevel || 3); break;
-    case 'fire': fireSeq(m.user || 'Khán giả', m.coins); break;
-    case 'pet-new': {
+    case 'hatch': hatchSeq(m.uniqueId, m.toLevel || 2, m.nickname); break;
+    case 'evolve': evolveSeq(m.uniqueId, m.toLevel || 3, m.nickname); break;
+    case 'fire': fireSeq(m.nickname || m.user || 'Khán giả', m.coins, m.mouth); break;
+    case 'dragon-new': {
       const c = dragonCenter();
       burst(c.x, c.y + 560, 36, ['#ffd75e', '#9dffc4', '#ff96c8'], 380, 0.9, 6);
+      floatText(`🐉 ${m.nickname || 'Khán giả'} vừa có rồng riêng!`, c.x, c.y + 620, '#9dffc4');
+      break;
+    }
+    case 'ice-upgrade': {
+      const c = dragonCenter();
+      burst(c.x, c.y, 90, ['#c9b8ff', '#aa8cff', '#e6dcff', '#ffffff'], 620, 1.1, 8);
       break;
     }
     case 'golden': {

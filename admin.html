@@ -51,7 +51,7 @@
     </div>
 
     <div class="card">
-      <h2>Trạng thái rồng</h2>
+      <h2>Trạng thái đàn rồng (mỗi người 1 con)</h2>
       <p class="status" id="dragonStatus">Đang tải…</p>
       <div class="row seg" id="modeSeg">
         <span class="muted">Chế độ:</span>
@@ -68,6 +68,7 @@
     <div class="card">
       <h2>Mô phỏng sự kiện</h2>
       <div class="row">
+        <button data-sim="newUser">👋 Người mới vào (tạo rồng)</button>
         <button data-sim="like100">❤️ Thả tim ×100</button>
         <button data-sim="feed">🍖 Comment “ăn”</button>
         <button data-sim="follow">➕ Follow mới</button>
@@ -76,18 +77,19 @@
       </div>
       <div class="row">
         <button data-sim="golden" class="warn">🌟 Giờ vàng ×2 (60s)</button>
-        <button data-sim="fire" class="warn">🔥 Phun lửa ngay</button>
+        <button data-sim="fire" class="warn">🔥 Phun lửa ngay (rồng featured)</button>
       </div>
+      <p class="muted">Mỗi nút mô phỏng tác động lên rồng của ĐÚNG người dùng mô phỏng đó (VD quà lớn chỉ cộng cho rồng của “Fan Cứng” và làm rồng đó phun lửa).</p>
       <div class="row" style="margin-top:10px">
-        <button id="btnResetSession">🧹 Reset phiên (điểm ngày + rồng riêng)</button>
-        <button id="btnResetDragon" class="danger">🥚 Reset cấp rồng (về trứng)</button>
+        <button id="btnResetSession">🧹 Reset phiên (chỉ điểm ngày)</button>
+        <button id="btnResetDragons" class="danger">🗑️ Reset toàn bộ đàn rồng</button>
       </div>
-      <p class="muted">Reset phiên KHÔNG đụng cấp rồng chính. Reset cấp rồng có hỏi xác nhận và xoá cả tổng EXP đã lưu.</p>
+      <p class="muted">Reset phiên chỉ xoá điểm ngày — đàn rồng giữ nguyên. Reset toàn bộ đàn rồng xoá MỌI dragon của mọi người (có hỏi xác nhận), chỉ bấm khi muốn nuôi lại từ đầu.</p>
     </div>
 
     <div class="card">
-      <h2>🏆 Bảng Vàng hôm nay (top 10)</h2>
-      <table><thead><tr><th>#</th><th>Người xem</th><th>Điểm</th></tr></thead><tbody id="topBody"><tr><td colspan="3">—</td></tr></tbody></table>
+      <h2>🏆 Bảng Vàng — đàn rồng (top 10 theo EXP)</h2>
+      <table><thead><tr><th>#</th><th>Người xem</th><th>Cấp rồng</th><th>Tổng EXP</th></tr></thead><tbody id="topBody"><tr><td colspan="4">—</td></tr></tbody></table>
     </div>
   </div>
 

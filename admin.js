@@ -27,11 +27,16 @@ function cmd(obj) { if (ws && ws.readyState === 1) ws.send(JSON.stringify(Object
 function fmt(n) { return Number(n || 0).toLocaleString('vi-VN'); }
 function renderState(s) {
   const g = s.golden && s.golden.active ? ` • 🌟 GIỜ VÀNG còn ${Math.max(0, Math.round((s.golden.until - Date.now()) / 1000))}s` : '';
+  const dragons = s.dragons || [];
+  const F = s.featured || dragons[0] || null;
+  const totalExp = dragons.reduce((a, d) => a + (d.exp || 0), 0);
   $('dragonStatus').innerHTML =
-    `<span class="pillStat">CẤP <b>${s.level}</b> — ${s.levelName}</span>` +
-    `<span class="pillStat">EXP cấp: <b>${fmt(s.expInLevel)}${s.expNeed ? ' / ' + fmt(s.expNeed) : ''}</b></span>` +
-    `<span class="pillStat">Tổng EXP: <b>${fmt(s.totalExp)}</b></span>` +
-    `<span class="pillStat">Rồng riêng: <b>${(s.pets || []).length}</b></span>` +
+    `<span class="pillStat">Đàn rồng: <b>${dragons.length}</b> con</span>` +
+    (F
+      ? `<span class="pillStat">Featured: 🐉 <b>${esc(F.nickname)}</b> — Cấp <b>${F.level}</b> (${esc(F.levelName)})</span>` +
+        `<span class="pillStat">EXP featured: <b>${fmt(F.expInLevel)}${F.expNeed ? ' / ' + fmt(F.expNeed) : ''}</b> (tổng ${fmt(F.exp)})</span>`
+      : '<span class="pillStat">Chưa có rồng nào</span>') +
+    `<span class="pillStat">Tổng EXP cả đàn: <b>${fmt(totalExp)}</b></span>` +
     `<span class="pillStat">${s.paused ? '⏸️ ĐANG TẠM DỪNG' : '▶️ Đang nhận EXP'}${g}</span>`;
   $('btnTts').textContent = s.tts ? '🔊 TTS sân khấu: BẬT' : '🔇 TTS sân khấu: TẮT';
   $('btnTts').classList.toggle('active', !s.tts);
@@ -40,8 +45,8 @@ function renderState(s) {
   renderRelay(s.relay);
   const tb = $('topBody');
   tb.innerHTML = (s.top && s.top.length)
-    ? s.top.map((p, i) => `<tr><td>${i + 1}</td><td>${esc(p.user)}</td><td>${fmt(p.points)}</td></tr>`).join('')
-    : '<tr><td colspan="3">Chưa có điểm hôm nay.</td></tr>';
+    ? s.top.map((p, i) => `<tr><td>${i + 1}</td><td>${esc(p.user)}</td><td>Cấp ${p.level || 1}</td><td>${fmt(p.points)}</td></tr>`).join('')
+    : '<tr><td colspan="4">Chưa có rồng nào trong đàn.</td></tr>';
   renderConn(s.conn, s.mode);
 }
 function renderStatus(msg) { renderConn(msg.conn, msg.mode); if (msg.state) renderRelay(msg.state.relay); }
@@ -82,9 +87,9 @@ $('btnPause').addEventListener('click', () => {
   cmd({ cmd: 'sim', sim: pausedUi ? 'pause' : 'resume' });
 });
 $('btnResetSession').addEventListener('click', () => {
-  if (confirm('Reset phiên? Xoá điểm Bảng Vàng hôm nay + toàn bộ rồng riêng. Cấp rồng chính giữ nguyên.')) cmd({ cmd: 'resetSession' });
+  if (confirm('Reset phiên? Chỉ xoá điểm NGÀY hôm nay. Đàn rồng của mọi người GIỮ NGUYÊN.')) cmd({ cmd: 'resetSession' });
 });
-$('btnResetDragon').addEventListener('click', () => {
-  if (confirm('RESET CẤP RỒNG về cấp 1 (trứng) và xoá tổng EXP đã lưu? Hành động này không hoàn tác được.')) cmd({ cmd: 'resetDragon' });
+$('btnResetDragons').addEventListener('click', () => {
+  if (confirm('RESET TOÀN BỘ ĐÀN RỒNG? Mọi dragon của mọi người xem sẽ bị xoá hết, ai cũng nuôi lại từ trứng. Hành động này không hoàn tác được.')) cmd({ cmd: 'resetDragons' });
 });
 addLog('Đã mở trang quản trị — đang chờ server…');

@@ -1,8 +1,11 @@
-# HƯỚNG DẪN LIVE — NUÔI RỒNG ONLINE (bản V1.1)
+# HƯỚNG DẪN LIVE — NUÔI RỒNG ONLINE (bản V2 — mỗi người 1 con rồng)
 
-Live tương tác TikTok: cả phòng cùng nuôi 1 con rồng chính (5 cấp tiến hóa),
-ai follow / tặng quà thì nhận 1 rồng riêng gắn tên mình. Cấp rồng được
-**lưu lại qua các phiên** — tắt live, mai mở lại rồng vẫn ở cấp cũ.
+Live tương tác TikTok: **mỗi người xem có 1 con rồng riêng**, được tạo
+ngay ở tương tác đầu tiên (thả tim / comment / follow / tặng quà / chia
+sẻ). EXP của ai cộng cho rồng của người đó — **ai cũng tiến hóa được**
+qua 5 cấp. Con rồng lớn giữa sân khấu là rồng của người vừa tương tác
+gần nhất. Đàn rồng được **lưu lại qua các phiên** — tắt live, mai mở
+lại đàn rồng vẫn nguyên.
 
 **Đường sự kiện chính:** extension Chrome **Nuôi Rồng Relay** (thư mục
 `extension/` trong app) quét trang phòng live TikTok đang mở trong Chrome
@@ -41,10 +44,13 @@ rồi gửi comment / follow / quà / like về server ở **cổng 3001**.
 - **Sân khấu** (cái người xem thấy): http://localhost:3001
 - **Quản trị**: http://localhost:3001/admin
 
-Vừa mở server lên là xem được ngay ở **chế độ DEMO** — sự kiện giả
-(tim, comment, follow, quà) tự chảy vào để rồng lớn dần, đúng như một
-buổi live thật. Dùng DEMO để tập dượt và kiểm tra hiệu ứng. Khi live
-thật thì chuyển sang chế độ **RELAY (extension)** ở trang quản trị.
+Vừa mở server lên là xem được ngay ở **chế độ DEMO** — nhiều người xem
+giả tự thả tim / comment / follow / tặng quà, **mỗi người nuôi rồng
+riêng của họ** (người hay tặng quà lớn lên cấp nhanh, người nhẹ tay ở
+cấp thấp) nên chỉ vài phút là thấy đàn rồng nhiều cấp và có rồng tiến
+hóa, đúng như một buổi live thật. Dùng DEMO để tập dượt và kiểm tra
+hiệu ứng. Khi live thật thì chuyển sang chế độ **RELAY (extension)**
+ở trang quản trị.
 
 Trên trang sân khấu có nút nhỏ **"🔇 Bấm để bật tiếng"** ở đáy — bấm 1 lần
 để trình duyệt cho phép đọc TTS (đọc tên người follow, quà lớn, lúc tiến
@@ -107,23 +113,34 @@ Lưu ý về độ tin cậy của extension (nói thẳng):
 
 ## Phần 5 — Luật chơi (để giới thiệu với người xem)
 
+**Mỗi người xem có 1 con rồng riêng**, tạo ngay ở tương tác đầu tiên
+bất kỳ. Mọi hành động cộng EXP cho **rồng của chính người đó**:
+
 | Hành động của người xem | Kết quả |
 |---|---|
-| Thả tim | +1 EXP / tim cho rồng chính |
-| Comment thường | +5 EXP |
+| Thả tim | +1 EXP / tim cho rồng của bạn |
+| Comment thường | +5 EXP cho rồng của bạn |
 | Comment có chữ **“ăn”** | +10 EXP + hiệu ứng cho ăn |
 | Chia sẻ live | +20 EXP |
-| **Follow** | +50 EXP + nhận **1 rồng riêng** (hệ Lửa / Nước / Hoa ngẫu nhiên) gắn tên mình |
-| **Tặng quà** | +10 EXP / xu + nhận rồng riêng; quà **≥ 99 xu** → rồng riêng hệ hiếm **Băng Đêm** + rồng chính **PHUN LỬA** ăn mừng |
+| **Follow** | +50 EXP |
+| **Tặng quà** | +10 EXP / xu; quà **≥ 99 xu** → rồng của bạn nâng hệ hiếm **Băng Đêm** + **PHUN LỬA** ăn mừng |
 
-- Ngưỡng lên cấp (EXP tính trong cấp): Cấp 1→2: **1.000** • 2→3: **3.000** •
-  3→4: **8.000** • 4→5: **20.000**. Lên cấp 2 là khoảnh khắc **NỞ** từ trứng.
-- **Giờ vàng**: mỗi 30 phút tự bật 60 giây **nhân đôi EXP** (admin cũng
-  bấm bật tay được ở trang quản trị).
-- **Bảng Vàng**: điểm = EXP mỗi người đóng góp trong ngày, top 3 hiện
-  trên sân khấu, top 10 ở trang quản trị. Sang ngày mới tự làm mới.
-- Hàng rồng riêng trên sân khấu hiện tối đa 10 con mới nhất (thừa thì
-  gom thành vòng “+N”).
+- Hệ rồng khi mới tạo: ngẫu nhiên **Lửa / Nước / Hoa**. Quà ≥ 99 xu
+  (bất kỳ lúc nào) nâng hệ thành **Băng Đêm** hiếm.
+- Ngưỡng lên cấp theo **tổng EXP tích lũy của từng con rồng**:
+  Cấp 2 ≥ **1.000** • Cấp 3 ≥ **4.000** • Cấp 4 ≥ **12.000** •
+  Cấp 5 ≥ **32.000**. Lên cấp 2 là khoảnh khắc **NỞ** từ trứng; mỗi lần
+  tiến hóa/nở, rồng đó chiếm sân khấu lớn + TTS đọc tên chủ rồng.
+- **Rồng lớn giữa sân khấu** = rồng của người vừa tương tác gần nhất,
+  hiển thị đúng cấp + thanh EXP của nó, kèm thẻ “🐉 Rồng của … • Cấp N”.
+- **Đàn rồng của phòng** (hàng dưới sân khấu): mỗi ô là 1 con rồng với
+  ảnh theo cấp của nó, viền màu theo hệ, huy hiệu “Cấp N” và tên chủ;
+  sắp xếp theo EXP giảm dần, tối đa 10 ô (thừa gom thành “+N con nữa”).
+- **Giờ vàng**: mỗi 30 phút tự bật 60 giây **nhân đôi EXP cho mọi
+  người** (admin cũng bấm bật tay được ở trang quản trị).
+- **Bảng Vàng**: xếp theo tổng EXP rồng của từng người, top 3 hiện
+  trên sân khấu kèm cấp (vd “1. Chị Hằng • Cấp 5 — 8.672”), top 10 ở
+  trang quản trị.
 
 ## Phần 6 — Các nút ở trang quản trị
 
@@ -133,15 +150,17 @@ Lưu ý về độ tin cậy của extension (nói thẳng):
 - **📡 RELAY (extension)**: hiện "đang chờ sự kiện" hay "đã nhận sự
   kiện" + giờ + tổng số sự kiện theo loại — dùng để biết extension
   còn sống không.
-- **Mô phỏng sự kiện**: Thả tim ×100, Comment “ăn”, Follow mới, Quà nhỏ
-  10 xu, Quà lớn 299 xu (kèm phun lửa), Giờ vàng, Phun lửa ngay —
+- **Mô phỏng sự kiện**: Người mới vào (tạo rồng), Thả tim ×100, Comment
+  “ăn”, Follow mới, Quà nhỏ 10 xu, Quà lớn 299 xu (kèm phun lửa), Giờ
+  vàng, Phun lửa ngay (rồng featured) — mỗi nút tác động lên rồng của
+  đúng người dùng mô phỏng đó —
   dùng để test hiệu ứng hoặc "cứu nguy" lúc phòng vắng.
 - **⏸ Tạm dừng / ▶ Tiếp tục**: đóng băng nhận EXP (sự kiện đến sẽ bị bỏ qua).
 - **🔊 TTS sân khấu BẬT/TẮT**: tắt/mở giọng đọc trên trang sân khấu.
-- **🧹 Reset phiên**: xoá điểm Bảng Vàng hôm nay + toàn bộ rồng riêng.
-  **Cấp rồng chính giữ nguyên.**
-- **🥚 Reset cấp rồng**: đưa rồng về cấp 1 và xoá tổng EXP đã lưu —
-  có hộp hỏi xác nhận, chỉ bấm khi thật sự muốn nuôi lại từ đầu.
+- **🧹 Reset phiên**: chỉ xoá điểm theo ngày. **Đàn rồng giữ nguyên.**
+- **🗑️ Reset toàn bộ đàn rồng**: xoá MỌI dragon của mọi người xem, ai
+  cũng nuôi lại từ trứng — có hộp hỏi xác nhận, chỉ bấm khi thật sự
+  muốn làm lại từ đầu.
 
 ## Phần 7 — Mục thử nghiệm tiktok-live-connector (TẮT mặc định)
 
@@ -164,10 +183,13 @@ Trong trang quản trị còn mục **"Thử nghiệm — tiktok-live-connector
 
 Trong thư mục `app/data/`:
 
-- `state.json` — cấp + EXP của rồng chính. **Đây là "sinh mạng" của
-  rồng**: đừng xoá file này trừ khi muốn nuôi lại từ trứng. Sao lưu
-  file này là sao lưu được con rồng.
-- `scores-YYYY-MM-DD.json` — Bảng Vàng từng ngày.
+- `state.json` — **toàn bộ đàn rồng** (mỗi người 1 con: tên, hệ, tổng
+  EXP, cấp suy ra từ EXP). **Đây là "sinh mạng" của cả đàn**: đừng xoá
+  file này trừ khi muốn mọi người nuôi lại từ trứng. Sao lưu file này
+  là sao lưu được cả đàn rồng. Nếu còn file `state.json` từ bản luật
+  cũ (rồng chung + rồng riêng), server tự chuyển đổi (migration) sang
+  đàn rồng khi khởi động — không mất tiến trình của ai.
+- `scores-YYYY-MM-DD.json` — điểm đóng góp theo từng ngày (phụ trợ).
 
 ## Phần 9 — Sự cố hay gặp
 
@@ -200,8 +222,11 @@ curl -X POST http://localhost:3001/test-event -H 'Content-Type: application/json
 curl http://localhost:3001/api/status
 ```
 
-Sự kiện sẽ hiện ngay trên sân khấu (comment "ăn" → cho ăn; follow → có
-rồng riêng; quà 299 → rồng Băng Đêm + phun lửa). `/test-event` và
-`/admin` chỉ mở được từ chính máy host (localhost) để tránh bị nghịch
-khi đi qua tunnel; riêng `/api/relay/*` mở cho extension gọi từ trang
-tiktok.com (có CORS) nhưng vẫn chỉ tới được khi truy cập localhost.
+Sự kiện sẽ hiện ngay trên sân khấu và cộng cho rồng của đúng người
+gửi: comment "ăn" → rồng của KiemThu +10 EXP; follow → KiemThu có
+rồng riêng +50 EXP; quà 299 → rồng của KiemThu +2.990 EXP, lên cấp,
+nâng hệ Băng Đêm + phun lửa. Xem `dragons` trong `/api/status` để thấy
+đàn rồng và EXP từng con. `/test-event` và `/admin` chỉ mở được từ
+chính máy host (localhost) để tránh bị nghịch khi đi qua tunnel;
+riêng `/api/relay/*` mở cho extension gọi từ trang tiktok.com (có
+CORS) nhưng vẫn chỉ tới được khi truy cập localhost.
