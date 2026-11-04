@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuôi Rồng Online — Sân khấu LIVE</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="viewport">
+  <div id="stage">
+    <!-- Cảnh nền -->
+    <div class="bg"></div>
+
+    <!-- Rồng chính (hộp vuông — toạ độ miệng tính theo % hộp này) -->
+    <div id="dragonWrap">
+      <div id="dragonBob">
+        <img id="dragonImg" src="/assets/egg.webp" alt="Rồng chính">
+        <div id="mouthGlow"></div>
+      </div>
+    </div>
+
+    <!-- Lớp hiệu ứng hạt -->
+    <canvas id="fxCanvas" width="1080" height="1920"></canvas>
+    <div id="flash"></div>
+
+    <!-- THANH TIÊU ĐỀ + CẤP (vùng an toàn: bắt đầu y 14,4%) -->
+    <div class="pill" id="titleBar">
+      <div class="titleTexts">
+        <div class="titleMain">NUÔI RỒNG ONLINE</div>
+        <div class="titleSub">Cả phòng cùng nuôi 1 con rồng</div>
+      </div>
+      <div id="levelBadge">CẤP 1</div>
+    </div>
+
+    <!-- THANH EXP -->
+    <div class="pill" id="expBar">
+      <div id="expTrack"><div id="expFill"></div><div id="goldenTag" class="hidden">GIỜ VÀNG ×2</div></div>
+      <div id="expText">EXP 0 / 1.000</div>
+    </div>
+
+    <!-- BANNER SỰ KIỆN -->
+    <div id="eventBanner" class="hidden"></div>
+
+    <!-- BẢNG VÀNG -->
+    <div class="pill" id="leaderboard">
+      <div class="lbTitle">🏆 BẢNG VÀNG NUÔI RỒNG</div>
+      <div id="lbRows"><div class="lbEmpty">Chưa có ai — thả tim để lên bảng!</div></div>
+    </div>
+
+    <!-- DÒNG HƯỚNG DẪN -->
+    <div class="pill" id="hintLine">Thả tim = ủ ấm &nbsp;•&nbsp; Comment “ăn” = cho ăn &nbsp;•&nbsp; Follow = có rồng riêng &nbsp;•&nbsp; Quà = lớn nhanh</div>
+
+    <!-- HÀNG RỒNG RIÊNG -->
+    <div id="petsLabel">RỒNG RIÊNG CỦA NGƯỜI XEM — follow / tặng quà là có</div>
+    <div id="petsRow"></div>
+
+    <!-- Banner lớn giữa sân (nở / tiến hoá) -->
+    <div id="bigBanner" class="hidden"></div>
+
+    <button id="audioChip" title="Bấm để bật tiếng đọc sự kiện">🔇 Bấm để bật tiếng</button>
+    <div id="connDot" title="Trạng thái kết nối server"></div>
+  </div>
+</div>
+<script src="/stage.js"></script>
+</body>
+</html>

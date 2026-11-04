@@ -1,0 +1,189 @@
+/* NUÔI RỒNG ONLINE — sân khấu 1080×1920.
+   Bố cục theo VÙNG AN TOÀN đã duyệt (khung-916-mau-v2):
+   mọi chữ/bảng nằm trong y 276–1420 của 1920 (14,4% – 74%).
+   Ngoài vùng đó chỉ có cảnh nền (TikTok đè giao diện lên cũng không mất chữ). */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; background: #05060f; overflow: hidden; font-family: "Noto Sans", "Segoe UI", Arial, sans-serif; }
+#viewport { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #05060f; }
+#stage {
+  position: relative;
+  width: min(100vw, 56.25vh);   /* 9:16 */
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  background: #0a0d24;
+  color: #fff;
+}
+
+/* ---------- Nền ---------- */
+.bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 90% 40% at 50% 88%, rgba(64, 40, 110, .55), transparent 70%),
+    radial-gradient(ellipse 70% 30% at 50% 6%, rgba(30, 60, 120, .5), transparent 70%),
+    linear-gradient(180deg, #131a3d 0%, #1b2350 30%, #241d4e 62%, #170f33 100%);
+}
+.bg::after {
+  content: ""; position: absolute; inset: 0;
+  background-image:
+    radial-gradient(2px 2px at 12% 22%, rgba(255,255,255,.8), transparent),
+    radial-gradient(2px 2px at 82% 12%, rgba(255,255,255,.7), transparent),
+    radial-gradient(3px 3px at 64% 30%, rgba(255,230,160,.8), transparent),
+    radial-gradient(2px 2px at 30% 8%, rgba(255,255,255,.6), transparent),
+    radial-gradient(2px 2px at 92% 40%, rgba(255,255,255,.5), transparent);
+}
+
+/* ---------- Rồng chính ---------- */
+#dragonWrap {
+  position: absolute; left: 1%; width: 98%;
+  top: 16.2%; aspect-ratio: 1 / 1;
+  z-index: 2;
+}
+#dragonBob { width: 100%; height: 100%; animation: breathe 1.35s ease-in-out infinite alternate; transform-origin: 50% 60%; position: relative; }
+#dragonImg {
+  width: 100%; height: 100%; object-fit: cover;
+  border-radius: 26px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.55), 0 0 0 3px rgba(255, 215, 120, .25), 0 0 90px rgba(90, 130, 255, .18);
+}
+#dragonWrap.lv4 #dragonBob, #dragonWrap.lv5 #dragonBob { animation-duration: 1.7s; }
+#dragonWrap.shake #dragonBob { animation: shakeAnim .12s linear infinite; }
+#dragonWrap.pop #dragonBob { animation: popIn .55s cubic-bezier(.2, 2.2, .4, 1) 1; }
+@keyframes breathe {
+  from { transform: translateY(0.6%) scale(1.0) rotate(-0.35deg); }
+  to   { transform: translateY(-1.5%) scale(1.018) rotate(0.35deg); }
+}
+@keyframes shakeAnim {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-0.7%, 0.4%) rotate(-0.7deg); }
+  50% { transform: translate(0.7%, -0.3%) rotate(0.7deg); }
+  75% { transform: translate(-0.5%, -0.4%) rotate(-0.5deg); }
+  100% { transform: translate(0.5%, 0.3%) rotate(0.5deg); }
+}
+@keyframes popIn {
+  0% { transform: scale(.55); opacity: .2; }
+  60% { transform: scale(1.09); opacity: 1; }
+  100% { transform: scale(1); }
+}
+#mouthGlow {
+  position: absolute; width: 16%; aspect-ratio: 1; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255,190,80,.95), rgba(255,120,30,.45) 55%, transparent 72%);
+  opacity: 0; pointer-events: none; mix-blend-mode: screen;
+}
+
+/* ---------- Canvas hiệu ứng + chớp sáng ---------- */
+#fxCanvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 6; pointer-events: none; }
+#flash { position: absolute; inset: 0; background: #fff7dd; opacity: 0; z-index: 7; pointer-events: none; }
+
+/* ---------- Các pill chung ---------- */
+.pill {
+  position: absolute; z-index: 10;
+  background: rgba(9, 10, 32, .88);
+  border: 3px solid rgba(255, 210, 90, .9);
+  border-radius: 26px;
+}
+
+/* Tiêu đề: y 276/1920 = 14,4% */
+#titleBar {
+  top: 14.4%; left: 3.3%; right: 3.3%; height: 6.7%;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2.6%;
+}
+.titleMain { font-size: 4.9cqw; font-weight: 800; color: #ffdc6e; letter-spacing: .5px; line-height: 1.05; }
+.titleSub { font-size: 2.9cqw; color: #dfe6ff; margin-top: 2%; }
+#levelBadge {
+  background: #c8283f; color: #fff; font-weight: 800; font-size: 4.2cqw;
+  padding: 1.4% 3.4%; border-radius: 999px; white-space: nowrap;
+  box-shadow: 0 4px 18px rgba(200, 40, 63, .55);
+}
+/* dùng cqw theo bề ngang sân khấu: khai báo container */
+#stage { container-type: size; }
+
+/* EXP: ngay dưới tiêu đề */
+#expBar { top: 21.9%; left: 3.3%; right: 3.3%; height: 5.4%; border-color: rgba(120, 220, 255, .9); padding: 1.6% 2.4%; }
+#expTrack { position: relative; height: 42%; background: #262b52; border-radius: 999px; overflow: hidden; }
+#expFill { height: 100%; width: 0%; background: linear-gradient(90deg, #2fd67c, #7dffb0); border-radius: 999px; transition: width .5s ease; }
+#expBar.golden #expFill { background: linear-gradient(90deg, #ffb52e, #ffe97a); }
+#goldenTag {
+  position: absolute; right: 1.5%; top: 50%; transform: translateY(-50%);
+  font-size: 2.4cqw; font-weight: 800; color: #3a2700; background: #ffd94d;
+  padding: .4% 1.6%; border-radius: 999px;
+}
+#expText { margin-top: 1.6%; font-size: 3cqw; font-weight: 700; color: #fff; }
+
+/* Banner sự kiện */
+#eventBanner {
+  position: absolute; z-index: 11; top: 28.3%; left: 3.3%; max-width: 58%;
+  background: rgba(96, 20, 96, .92); border: 2px solid rgba(255, 150, 255, .9);
+  color: #ffe9ff; font-size: 2.9cqw; font-weight: 700;
+  padding: 1.3% 2.2%; border-radius: 18px;
+  animation: bannerIn .3s ease;
+}
+@keyframes bannerIn { from { transform: translateY(-12px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* Bảng vàng */
+#leaderboard { top: 28.3%; right: 3.3%; width: 36.5%; border-color: rgba(255, 210, 90, .75); padding: 1.5% 2%; z-index: 10; }
+.lbTitle { font-size: 2.7cqw; font-weight: 800; color: #ffdc6e; margin-bottom: 4%; }
+.lbRow { display: flex; justify-content: space-between; font-size: 2.9cqw; padding: 2.2% 0; color: #eef2ff; }
+.lbRow .pts { color: #7dffb0; font-weight: 800; }
+.lbRow.top1 .nm { color: #ffd94d; font-weight: 800; }
+.lbEmpty { font-size: 2.6cqw; color: #aab4dd; padding: 2% 0; }
+
+/* Hướng dẫn 1 dòng */
+#hintLine {
+  top: 57.6%; left: 3.3%; right: 3.3%;
+  text-align: center; font-size: 2.75cqw; font-weight: 700; color: #fff;
+  padding: 1.5% 1%; border-width: 2px; border-color: rgba(255, 210, 90, .65);
+  white-space: nowrap; overflow: hidden;
+}
+
+/* Hàng rồng riêng */
+#petsLabel {
+  position: absolute; z-index: 10; top: 61.6%; left: 3.7%;
+  font-size: 2.9cqw; font-weight: 800; color: #ffe696;
+  text-shadow: 0 2px 8px rgba(0,0,0,.8);
+}
+#petsRow {
+  position: absolute; z-index: 10; top: 64.6%; left: 3.3%; right: 3.3%;
+  display: flex; gap: 2.2%; align-items: flex-start;
+}
+.pet { width: 17.6%; text-align: center; animation: petIn .45s cubic-bezier(.2, 1.8, .4, 1); }
+@keyframes petIn { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.pet .ring {
+  width: 100%; aspect-ratio: 1; border-radius: 50%; padding: 3.5%;
+  border: 4px solid var(--c, #888);
+  box-shadow: 0 0 18px var(--c, #888);
+  background: rgba(5, 6, 20, .6);
+}
+.pet img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+.pet .tag {
+  margin-top: 6%; display: inline-block; max-width: 100%;
+  font-size: 2.45cqw; font-weight: 700; color: #fff;
+  background: rgba(9, 10, 32, .92); border: 2px solid var(--c, #888);
+  padding: 2.5% 7%; border-radius: 999px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pet.more .ring { display: flex; align-items: center; justify-content: center; font-size: 4.6cqw; font-weight: 800; color: #ffd94d; background: rgba(9,10,32,.9); }
+.pet .lv { font-size: 2.1cqw; color: #ffd94d; font-weight: 800; }
+
+/* Banner lớn (nở / tiến hoá) */
+#bigBanner {
+  position: absolute; z-index: 12; top: 33%; left: 50%; transform: translateX(-50%);
+  background: rgba(8, 8, 30, .94); border: 4px solid #ffd75e; border-radius: 30px;
+  padding: 2.6% 5%; text-align: center; min-width: 62%;
+  animation: bigIn .4s cubic-bezier(.2, 1.8, .4, 1);
+  box-shadow: 0 18px 60px rgba(0,0,0,.6), 0 0 60px rgba(255, 200, 60, .35);
+}
+@keyframes bigIn { from { transform: translateX(-50%) scale(.5); opacity: 0; } to { transform: translateX(-50%) scale(1); opacity: 1; } }
+#bigBanner .bb1 { font-size: 5.6cqw; font-weight: 900; color: #ffde6e; line-height: 1.15; }
+#bigBanner .bb2 { font-size: 3.6cqw; font-weight: 800; color: #9dffc4; margin-top: 4%; }
+
+.hidden { display: none !important; }
+
+/* Nút bật tiếng + chấm kết nối (cho host, nằm ngoài vùng chữ chính) */
+#audioChip {
+  position: absolute; z-index: 13; bottom: 1.2%; left: 50%; transform: translateX(-50%);
+  background: rgba(9, 10, 32, .85); color: #dfe6ff; border: 2px solid rgba(160, 180, 255, .6);
+  font-size: 2.6cqw; padding: 1% 3%; border-radius: 999px; cursor: pointer;
+}
+#connDot { position: absolute; z-index: 13; top: 1.4%; right: 2.4%; width: 2.6cqw; height: 2.6cqw; border-radius: 50%; background: #e33; box-shadow: 0 0 10px rgba(0,0,0,.6); }
+#connDot.on { background: #2fd67c; }

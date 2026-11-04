@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuôi Rồng Online — Quản trị</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Noto Sans", "Segoe UI", Arial, sans-serif; background: #0b0e22; color: #eef2ff; }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 18px; }
+  h1 { font-size: 22px; margin: 4px 0 14px; color: #ffdc6e; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: #141834; border: 1px solid #2a3070; border-radius: 14px; padding: 14px 16px; }
+  .card h2 { font-size: 15px; margin: 0 0 10px; color: #9dffc4; text-transform: uppercase; letter-spacing: .4px; }
+  input[type=text] { width: 100%; padding: 9px 11px; border-radius: 9px; border: 1px solid #3a4080; background: #0b0e22; color: #fff; font-size: 15px; }
+  button { cursor: pointer; border: 1px solid #3a4080; background: #232861; color: #fff; border-radius: 9px; padding: 8px 12px; font-size: 14px; margin: 3px 2px; }
+  button:hover { background: #2e3576; }
+  button.primary { background: #1d7a44; border-color: #2fae5f; }
+  button.danger { background: #7a1d2b; border-color: #ae2f42; }
+  button.warn { background: #7a541d; border-color: #ae7d2f; }
+  button.active { background: #c8283f; border-color: #ff5f7a; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .status { font-size: 14px; line-height: 1.55; }
+  .status b { color: #ffd94d; }
+  #log { background: #05060f; border: 1px solid #2a3070; border-radius: 10px; height: 300px; overflow-y: auto; padding: 10px 12px; font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; line-height: 1.6; white-space: pre-wrap; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  td, th { padding: 5px 6px; border-bottom: 1px solid #2a3070; text-align: left; }
+  th { color: #9dffc4; }
+  .pillStat { display: inline-block; background: #232861; border-radius: 999px; padding: 3px 11px; margin: 2px 3px 2px 0; font-size: 13px; }
+  .seg button.active { background: #1d7a44; }
+  .muted { color: #98a2cf; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🐉 NUÔI RỒNG ONLINE — Trang quản trị</h1>
+  <div class="grid">
+    <div class="card">
+      <h2>Thử nghiệm — tiktok-live-connector (cần SIGN_SERVER_URL)</h2>
+      <div class="row">
+        <input type="text" id="username" placeholder="Username TikTok (không cần @) — vd: user6as3xopq89">
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button class="primary" id="btnConnect">▶ Kết nối (thử nghiệm)</button>
+        <button id="btnDisconnect">⏹ Ngắt</button>
+      </div>
+      <p class="status" id="connStatus">Trạng thái: —</p>
+      <p class="status" id="relayStatus">📡 RELAY (extension): đang chờ sự kiện…</p>
+      <p class="muted">Đường sự kiện CHÍNH là extension relay (chế độ RELAY bên cạnh): cài extension trong thư mục <b>extension/</b>, mở tab phòng live TikTok trong Chrome, badge “Nuôi Rồng Relay” xanh là đã nối. Mục TLC này TẮT mặc định — chỉ chạy khi server khởi động với env <b>SIGN_SERVER_URL</b> trỏ tới sign server tự host; không dùng dịch vụ ký bên thứ ba. Lỗi kết nối hiện ở Log bên dưới, server không sập.</p>
+    </div>
+
+    <div class="card">
+      <h2>Trạng thái rồng</h2>
+      <p class="status" id="dragonStatus">Đang tải…</p>
+      <div class="row seg" id="modeSeg">
+        <span class="muted">Chế độ:</span>
+        <button data-mode="demo">DEMO</button>
+        <button data-mode="relay">RELAY (extension)</button>
+        <button data-mode="manual">THỦ CÔNG</button>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button id="btnTts">🔊 TTS sân khấu: BẬT</button>
+        <button id="btnPause">⏸ Tạm dừng</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Mô phỏng sự kiện</h2>
+      <div class="row">
+        <button data-sim="like100">❤️ Thả tim ×100</button>
+        <button data-sim="feed">🍖 Comment “ăn”</button>
+        <button data-sim="follow">➕ Follow mới</button>
+        <button data-sim="giftSmall">🎁 Quà nhỏ (10 xu)</button>
+        <button data-sim="giftBig">🦁 Quà lớn (299 xu)</button>
+      </div>
+      <div class="row">
+        <button data-sim="golden" class="warn">🌟 Giờ vàng ×2 (60s)</button>
+        <button data-sim="fire" class="warn">🔥 Phun lửa ngay</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button id="btnResetSession">🧹 Reset phiên (điểm ngày + rồng riêng)</button>
+        <button id="btnResetDragon" class="danger">🥚 Reset cấp rồng (về trứng)</button>
+      </div>
+      <p class="muted">Reset phiên KHÔNG đụng cấp rồng chính. Reset cấp rồng có hỏi xác nhận và xoá cả tổng EXP đã lưu.</p>
+    </div>
+
+    <div class="card">
+      <h2>🏆 Bảng Vàng hôm nay (top 10)</h2>
+      <table><thead><tr><th>#</th><th>Người xem</th><th>Điểm</th></tr></thead><tbody id="topBody"><tr><td colspan="3">—</td></tr></tbody></table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h2>Log sự kiện</h2>
+    <div id="log"></div>
+  </div>
+</div>
+<script src="/admin.js"></script>
+</body>
+</html>
